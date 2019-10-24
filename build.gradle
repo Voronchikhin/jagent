@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.nsu.fit'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'org.javassist:javassist:3.25.0-GA'
+}
+
+jar {
+    manifest {
+        attributes 'PreMain-Class' : 'ru.nsu.fit.Agent'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+task runWith(type:JavaExec){
+    dependsOn{
+        clean
+        jar
+    }
+    jvmArgs = ['-javaagent:build/libs/jagent-1.0-SNAPSHOT.jar']
+    main = 'ru.nsu.fit.TransactionProcessor'
+}
